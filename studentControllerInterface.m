@@ -26,7 +26,7 @@ classdef studentControllerInterface < matlab.System
         theta_d = 0;
         a_ball_ref_prev = 0;
         j_ball_ref_prev = 0;
-        x_obs = [-0.19 0 0 0]';
+        x_obs = [0 0 0 0]';
 
         % To be initialized
         alpha
@@ -75,12 +75,21 @@ classdef studentControllerInterface < matlab.System
             obj.x_obs = [w; z];
             v_ball = w(2);
             dtheta = z(2);
-
-            % Control law
-            xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
-            e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
-            k = [10 31 33 13];
-            obj.u = (obj.alpha*dtheta*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));
+            
+            % Choose the approximation used for I/O linearization
+            approximation = 1;
+            k = [16 32 24 8]; % (s-2)^4
+            if(approximation==1)
+                % Control law for 1st approximation
+                xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
+                e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
+                obj.u = (obj.alpha*dtheta^2*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));
+            elseif(approximation==2)
+                % Control law for 2nd approximation
+                xi = [p_ball, v_ball, obj.alpha*sin(theta) + obj.beta*p_ball*dtheta^2*cos(theta)^2, obj.alpha*dtheta*cos(theta) + obj.beta*v_ball*dtheta^2*cos(theta)^2];
+                e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
+                obj.u = (obj.alpha*dtheta^2*sin(theta) + obj.beta*v_ball*dtheta^3*sin(2*theta)-obj.beta*dtheta^2*cos(theta)^2*(obj.alpha*sin(theta)+obj.beta*p_ball*dtheta^2*cos(theta)^2)+s_ball_ref+k*e')/(obj.alpha*cos(theta)+2*obj.beta*v_ball*dtheta*cos(theta)^2);
+            end
 
             % Change of variables
             V_servo = (obj.u*obj.tau+dtheta)/obj.K;
