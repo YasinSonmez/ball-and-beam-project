@@ -121,11 +121,13 @@ classdef studentControllerInterface < matlab.System
             
             theta_ref = obj.theta_ref_prev;
             dtheta_ref = obj.dtheta_ref_prev;
-            theta_ref = theta_ref ...
-                + sign(dtheta_ref)*sqrt((-a_ball_ref+obj.alpha*sin(theta_ref))/(obj.beta*(-p_ball_ref)*cos(theta_ref)^2))*delta_t;
+            theta_ref = 0;
+%             theta_ref = theta_ref ...
+%                 + sign(dtheta_ref)*sqrt((-a_ball_ref+obj.alpha*sin(theta_ref))/(obj.beta*(-p_ball_ref)*cos(theta_ref)^2))*delta_t;
             %theta_ref = min(theta_ref, theta_saturation);
             %theta_ref = max(theta_ref, -theta_saturation);
-            dtheta_ref = sign(dtheta_ref)*sqrt((-a_ball_ref+obj.alpha*sin(theta_ref))/(obj.beta*(-p_ball_ref)*cos(theta_ref)^2));
+%             dtheta_ref = sign(dtheta_ref)*sqrt((-a_ball_ref+obj.alpha*sin(theta_ref))/(obj.beta*(-p_ball_ref)*cos(theta_ref)^2));
+            dtheta_ref = 0;
             u_ref = (obj.tau*(dtheta_ref-obj.dtheta_ref_prev)/delta_t + dtheta_ref)/obj.K;
             
             x_ref = [p_ball_ref; v_ball_ref; theta_ref; dtheta_ref];
