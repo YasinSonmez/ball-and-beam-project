@@ -26,7 +26,7 @@ classdef studentControllerInterface < matlab.System
         theta_d = 0;
         a_ball_ref_prev = 0;
         j_ball_ref_prev = 0;
-        x_obs = [-0.19 0 0 0]';
+        x_obs = [0 0 0 0]';
         V = 0;
 
         % To be initialized
@@ -85,7 +85,7 @@ classdef studentControllerInterface < matlab.System
             % Control law
             xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
             e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
-            b = [1 4];
+            b = [1 3];
             k = flip(conv(b,conv(b,conv(b,b))));
             k = k(1:4);
             obj.u = (obj.alpha*dtheta^2*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));

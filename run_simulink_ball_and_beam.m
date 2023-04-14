@@ -1,6 +1,6 @@
 setup_simulink_simulation;
 % Initial state.
-x0 = [-0.19; 0.00; 0; 0];
+x0 = [0; 0.00; 0; 0];
 % Simulation time.
 T = 10;
 % plot animation if true.
