@@ -71,16 +71,19 @@ classdef studentControllerInterface < matlab.System
             p_ball = p_ball-obj.L/2;
             
             % Extract x_2 and x_4 using observer
-            w = obj.x_obs(1:2);
-            z = obj.x_obs(3:4);
-            phi = [0; obj.alpha*sin(theta)+obj.beta*p_ball*z(2)^2*cos(theta)^2];
-            w(1) = w(1)-obj.L/2;
-            w = w + (obj.A*w+phi+obj.K1*(p_ball-obj.C*w))*delta_t;
-            w(1) = w(1)+obj.L/2;
-            z = z + (obj.F*z+obj.G*obj.u+obj.K2*(theta-obj.H*z))*delta_t;
-            obj.x_obs = [w; z];
-            v_ball = w(2);
-            dtheta = z(2);
+%             w = obj.x_obs(1:2);
+%             z = obj.x_obs(3:4);
+%             phi = [0; obj.alpha*sin(theta)+obj.beta*p_ball*z(2)^2*cos(theta)^2];
+%             w(1) = w(1)-obj.L/2;
+%             w = w + (obj.A*w+phi+obj.K1*(p_ball-obj.C*w))*delta_t;
+%             w(1) = w(1)+obj.L/2;
+%             z = z + (obj.F*z+obj.G*obj.u+obj.K2*(theta-obj.H*z))*delta_t;
+%             obj.x_obs = [w; z];
+%             v_ball = w(2);
+%             dtheta = z(2);
+            v_ball = (p_ball - (obj.x_obs(1)-obj.L/2))/delta_t;
+            dtheta = (theta - obj.x_obs(3))/delta_t;
+            obj.x_obs = [p_ball+obj.L/2; v_ball; theta; dtheta];
 
             % Control law
             xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
