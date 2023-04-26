@@ -135,26 +135,20 @@ classdef studentControllerInterface < matlab.System
             
             A_lqr = [0 1 0 0; ...
                 obj.beta*dtheta_ref^2*cos(theta_ref)^2 0 ...
-                obj.alpha*cos(theta_ref)+2*obj.beta*p_ball_ref*dtheta_ref^2*cos(theta_ref)*sin(theta_ref) 2*obj.beta*p_ball_ref*dtheta_ref^2*cos(theta_ref)^2; ...
+                obj.alpha*cos(theta_ref)-2*obj.beta*p_ball_ref*dtheta_ref^2*cos(theta_ref)*sin(theta_ref) 2*obj.beta*p_ball_ref*dtheta_ref*cos(theta_ref)^2; ...
                 0 0 0 1; ...
                 0 0 0 -1/obj.tau];
             B_lqr = [0; 0; 0; obj.K/obj.tau];
+               
+            alpha = 5;
+            %dx_cost = alpha*abs(p_ball/(obj.L/2)+1)+1; % dx_cost = [1,alpha+1]
+            dx_cost = 1;
+            Q = 18000*[dx_cost 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
+            R = 1;
 
-            if p_ball < -0.30
-                Q = [18000 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
-                R = 1;
-            elseif p_ball > -0.11
-                Q = [18000 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
-                R = 1;
-            else
-                Q = [18000 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
-                R = 5;
-           end
-
-            if a_ball_ref == 0 %Q and R cost for square wave
-                Q = [1800 0 0 0; 0 0 0 0; 0 0 0 0; 0 0 0 0];
-                R = 5; 
-            end 
+            if a_ball_ref == 0 && v_ball_ref == 0
+                R = R*50;
+            end
             
             K_lqr = lqr_bb_model_2(obj, A_lqr, B_lqr, Q, R);
             
